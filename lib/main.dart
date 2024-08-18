@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 void main() => runApp(MyApp());
 
@@ -114,6 +115,17 @@ class _HomePageState extends State<HomePage> {
                         });
                       },
                     );
+                  } else if (index == buttons.length - 1) {
+                    return MyButton(
+                      buttonText: buttons[index],
+                      color: Colors.red,
+                      textColor: Colors.white,
+                      buttonTapped: () {
+                        setState(() {
+                          equalPressed();
+                        });
+                      },
+                    );
                   } else {
                     return MyButton(
                       buttonTapped: () {
@@ -145,25 +157,38 @@ class _HomePageState extends State<HomePage> {
     }
     return false;
   }
+
+  void equalPressed() {
+    String finalQuestion = userQuestion.replaceAll('x', '*');
+
+    Parser p = Parser();
+    Expression exp = p.parse(finalQuestion);
+    ContextModel cm = ContextModel();
+    double eval = exp.evaluate(EvaluationType.REAL, cm);
+
+    setState(() {
+      userAnswer = eval.toString();
+    });
+  }
 }
 
 class MyButton extends StatelessWidget {
   final Color? color;
   final Color textColor;
   final String buttonText;
-  final VoidCallback buttonTapped; // Added this
+  final VoidCallback buttonTapped;
 
   MyButton({
     this.color,
     required this.textColor,
     required this.buttonText,
-    required this.buttonTapped, // Required this
+    required this.buttonTapped,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: buttonTapped, // Use this to trigger the function
+      onTap: buttonTapped,
       child: Container(
         color: color ?? Colors.transparent,
         child: Center(
