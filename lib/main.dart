@@ -18,6 +18,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  var userQuestion = '';
+  var userAnswer = '';
+
+  final myTextStyle = TextStyle(fontSize: 30, color: Colors.deepPurple[900]);
   final List<String> buttons = [
     'C',
     'DEL',
@@ -48,7 +52,32 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: <Widget>[
           Expanded(
-            child: Container(),
+            child: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  SizedBox(
+                    height: 50,
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      userQuestion,
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      userAnswer,
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
           Expanded(
             flex: 2,
@@ -64,15 +93,34 @@ class _HomePageState extends State<HomePage> {
                       buttonText: buttons[index],
                       color: Colors.green,
                       textColor: Colors.white,
+                      buttonTapped: () {
+                        setState(() {
+                          userQuestion = '';
+                          userAnswer = '';
+                        });
+                      },
                     );
                   } else if (index == 1) {
                     return MyButton(
                       buttonText: buttons[index],
                       color: Colors.red,
                       textColor: Colors.white,
+                      buttonTapped: () {
+                        setState(() {
+                          userQuestion = userQuestion.isNotEmpty
+                              ? userQuestion.substring(
+                                  0, userQuestion.length - 1)
+                              : '';
+                        });
+                      },
                     );
                   } else {
                     return MyButton(
+                      buttonTapped: () {
+                        setState(() {
+                          userQuestion += buttons[index];
+                        });
+                      },
                       buttonText: buttons[index],
                       color: isOperator(buttons[index])
                           ? Colors.deepPurple
@@ -103,18 +151,26 @@ class MyButton extends StatelessWidget {
   final Color? color;
   final Color textColor;
   final String buttonText;
+  final VoidCallback buttonTapped; // Added this
 
-  MyButton({this.color, required this.textColor, required this.buttonText});
+  MyButton({
+    this.color,
+    required this.textColor,
+    required this.buttonText,
+    required this.buttonTapped, // Required this
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: color ??
-          Colors.transparent, // Default to transparent if color is null
-      child: Center(
-        child: Text(
-          buttonText,
-          style: TextStyle(color: textColor),
+    return GestureDetector(
+      onTap: buttonTapped, // Use this to trigger the function
+      child: Container(
+        color: color ?? Colors.transparent,
+        child: Center(
+          child: Text(
+            buttonText,
+            style: TextStyle(color: textColor),
+          ),
         ),
       ),
     );
